@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  backend:
+    image: fastapi-backend
+    container_name: fastapi-app
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ordet.json:/app/ordet.json
+      - ./dailyr.json:/app/dailyr.json
+    restart: unless-stopped
