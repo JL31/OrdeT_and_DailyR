@@ -122,14 +122,22 @@ header {
 }
 
 /* Bouton d'ajout */
-.add-btn {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+.add-btn-floating {
+  position: fixed;
+  bottom: 19.0rem;
+  right: 1.5rem;
+  z-index: 999;
+  width: 180px;
 }
 
-.add-btn button {
-  margin-left: auto;
+.add-btn-floating button {
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
 }
 
 /* Navigation */
