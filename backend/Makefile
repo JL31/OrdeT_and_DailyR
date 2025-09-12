@@ -13,6 +13,7 @@ run:
 		-p $(PORT):8000 \
 		-v $(CURDIR)/ordet.json:/app/ordet.json \
 		-v $(CURDIR)/dailyr.json:/app/dailyr.json \
+        --restart always \
 		$(IMAGE_NAME)
 
 # Stoppe le container
