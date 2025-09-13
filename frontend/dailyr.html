@@ -29,6 +29,15 @@
     <div class="add-btn">
       <button id="add-element">+ Ajouter un élément</button>
     </div>
+
+    <!-- Export / Import -->
+    <div class="import-export">
+      <button id="export-btn">📤 Exporter</button>
+      <label for="import-file" class="secondary">
+        📥 Importer
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </label>
+    </div>
   </main>
 
   <dialog id="dialog-entry">
@@ -72,5 +81,5 @@
   </dialog>
 
   <script src="dailyr_script.js"></script>
-  </body>
+</body>
 </html>

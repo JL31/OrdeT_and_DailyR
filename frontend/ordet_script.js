@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/ordet";
+const STORAGE_KEY = "ordet_data";
 
 let sujets = [];
 let revues = [];
@@ -8,28 +8,18 @@ const sujetOrder = ["Terminé", "En attente", "En validation", "En revue", "En c
 const revueOrder = ["Faite", "En cours", "A faire"];
 const url = "https://jira.portal.TUTU.com/browse";
 
-async function loadData() {
-  try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    sujets = data.sujets || [];
-    revues = data.revues || [];
-    renderAll();
-  } catch (error) {
-    console.error("Erreur de chargement des données:", error);
+function loadData() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    const parsed = JSON.parse(data);
+    sujets = parsed.sujets || [];
+    revues = parsed.revues || [];
   }
+  renderAll();
 }
 
-async function saveData() {
-  try {
-    await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sujets, revues }),
-    });
-  } catch (error) {
-    console.error("Erreur de sauvegarde:", error);
-  }
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ sujets, revues }));
 }
 
 function addOrUpdateSujet(data) {
@@ -110,9 +100,7 @@ function renderSection(containerId, grouped, defaultCollapsed, type) {
       line.className = "line";
 
       const badge = document.createElement("span");
-      // IMPORTANT : le statut correspond exactement aux classes CSS !
-      let badgeClass = item.statut;
-      badgeClass = badgeClass.replace(/\s+/g, '').toLowerCase();
+      let badgeClass = item.statut.replace(/\s+/g, '').toLowerCase();
       badge.className = `badge ${badgeClass}`;
       badge.textContent = item.statut;
 
@@ -133,7 +121,7 @@ function renderSection(containerId, grouped, defaultCollapsed, type) {
       line.appendChild(commentaire);
 
       badge.onclick = (e) => {
-        e.stopPropagation(); // empêche la propagation à la ligne
+        e.stopPropagation();
         editingItem = item;
         editingType = type;
         const dialog = document.getElementById(`dialog-${type}`);
@@ -154,42 +142,77 @@ function renderSection(containerId, grouped, defaultCollapsed, type) {
   }
 }
 
-// Formulaire Sujet
+// --- Export JSON ---
+function exportData() {
+  const blob = new Blob([JSON.stringify({ sujets, revues }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ordet_backup.json";
+  a.click();
+}
+
+// --- Import JSON ---
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      sujets = imported.sujets || [];
+      revues = imported.revues || [];
+      saveData();
+      renderAll();
+    } catch (err) {
+      alert("Fichier JSON invalide !");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Init
+window.onload = loadData;
+document.getElementById("goto-dailyr").onclick = () => {
+  window.location.href = "dailyr.html";
+};
+document.getElementById("export-btn").onclick = exportData;
+document.getElementById("import-file").onchange = (e) => importData(e.target.files[0]);
+
+// Ouvrir les dialogs pour ajouter
 document.getElementById("add-sujet").onclick = () => {
   editingItem = null;
   editingType = "sujet";
-  const dialog = document.getElementById("dialog-sujet");
-  dialog.querySelector("form").reset();
-  dialog.showModal();
+  document.getElementById("form-sujet").reset();
+  document.getElementById("dialog-sujet").showModal();
 };
 
-document.getElementById("form-sujet").onsubmit = (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const data = Object.fromEntries(new FormData(form));
-  addOrUpdateSujet(data);
-  document.getElementById("dialog-sujet").close();
-};
-
-// Formulaire Revue
 document.getElementById("add-revue").onclick = () => {
   editingItem = null;
   editingType = "revue";
-  const dialog = document.getElementById("dialog-revue");
-  dialog.querySelector("form").reset();
-  dialog.showModal();
+  document.getElementById("form-revue").reset();
+  document.getElementById("dialog-revue").showModal();
 };
 
+// Soumission form Sujet
+document.getElementById("form-sujet").onsubmit = (e) => {
+  e.preventDefault();
+  const form = e.target;
+  addOrUpdateSujet({
+    statut: form.statut.value,
+    jira: form.jira.value.trim(),
+    resume: form.resume.value.trim(),
+    commentaire: form.commentaire.value.trim(),
+  });
+  document.getElementById("dialog-sujet").close();
+};
+
+// Soumission form Revue
 document.getElementById("form-revue").onsubmit = (e) => {
   e.preventDefault();
   const form = e.target;
-  const data = Object.fromEntries(new FormData(form));
-  addOrUpdateRevue(data);
+  addOrUpdateRevue({
+    statut: form.statut.value,
+    jira: form.jira.value.trim(),
+    resume: form.resume.value.trim(),
+    commentaire: form.commentaire.value.trim(),
+  });
   document.getElementById("dialog-revue").close();
-};
-
-window.onload = loadData;
-
-document.getElementById("goto-dailyr").onclick = () => {
-  window.location.href = "dailyr.html";
 };
