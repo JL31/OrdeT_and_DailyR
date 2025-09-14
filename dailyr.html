@@ -593,37 +593,39 @@
       const container = document.getElementById('task-list');
       container.innerHTML = '';
 
-      const allTasks = storage.getAllTasks();
-      const filteredTasks = filter ? 
-        allTasks.filter(task => 
-          task.jira.toLowerCase().includes(filter.toLowerCase()) ||
-          task.resume.toLowerCase().includes(filter.toLowerCase()) ||
-          task.commentaire.toLowerCase().includes(filter.toLowerCase())
-        ) : allTasks;
+      // On utilise searchAll si un filtre est fourni, sinon on récupère toutes les tâches daily
+      const items = filter 
+        ? storage.searchAll(filter) 
+        : storage.getAllTasks();
 
-      filteredTasks.forEach(task => {
-        const item = document.createElement('div');
-        item.className = 'task-item';
-        item.onclick = () => selectTask(task, item);
+      items.forEach(item => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        taskItem.onclick = () => selectTask(item, taskItem);
 
         const preview = document.createElement('div');
         preview.className = 'task-preview';
 
-        const badge = document.createElement('span');
-        let badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-        badge.className = `badge ${badgeClass}`;
-        badge.textContent = task.statut;
+        // Badge pour statut si existant
+        if (item.statut) {
+          const badge = document.createElement('span');
+          let badgeClass = item.statut.replace(/\s+/g, '').toLowerCase();
+          badge.className = `badge ${badgeClass}`;
+          badge.textContent = item.statut;
+          preview.appendChild(badge);
+        }
 
+        // Infos principales
         const info = document.createElement('div');
         info.innerHTML = `
-          <div><strong>${task.jira}</strong> - ${task.resume}</div>
-          <div class="has-text-grey is-size-7">${task.commentaire || 'Pas de commentaire'}</div>
+          <div><strong>${item.jira || item.reference || 'Sans référence'}</strong> - ${item.resume || item.description}</div>
+          <div class="has-text-grey is-size-7">${item.commentaire || 'Pas de commentaire'}</div>
+          <div class="has-text-grey is-size-7"><em>Source: ${item.source || 'daily'}</em></div>
         `;
-
-        preview.appendChild(badge);
         preview.appendChild(info);
-        item.appendChild(preview);
-        container.appendChild(item);
+        taskItem.appendChild(preview);
+
+        container.appendChild(taskItem);
       });
     }
 
