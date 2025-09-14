@@ -217,6 +217,15 @@ class UnifiedStorage {
 
     return results;
   }
+
+  getAllTasks() {
+    return [
+      ...this.data.dailyEntries.fait,
+      ...this.data.dailyEntries.afaire,
+      ...this.data.dailyEntries.notes
+    ];
+  }
+
 }
 
 // Instance globale
