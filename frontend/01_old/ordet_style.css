@@ -155,14 +155,30 @@ body {
   color: #374151;
 }
 
-.add-btn {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+.add-btn-1 {
+  position: fixed;
+  bottom: 23.0rem;
+  right: 1.5rem;
+  z-index: 999;
+  width: 200px;
+}
+
+.add-btn-2 {
+  position: fixed;
+  bottom: 16.0rem;
+  right: 1.5rem;
+  z-index: 999;
+  width: 200px;
 }
 
 .add-btn button {
-  margin-left: auto;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
 }
 
 dialog form {

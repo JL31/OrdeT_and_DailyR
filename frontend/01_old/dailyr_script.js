@@ -1,12 +1,10 @@
-const API_URL = "http://localhost:8000/dailyr";
+const STORAGE_KEY = "dailyr_data";
 
 let dailyEntries = {
   fait: [],
   afaire: [],
   notes: []
 };
-
-const url = "";
 
 let editingItem = null;
 let editingSection = null;
@@ -61,44 +59,53 @@ window.onload = async () => {
     document.getElementById("dialog-entry").close();
   };
 
-  await loadData();
+  loadData();
 };
 
-async function loadData() {
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    dailyEntries = data || { fait: [], afaire: [], notes: [] };
-    renderAll();
-  } catch (err) {
-    console.error("Erreur de chargement :", err);
+// --- Gestion localStorage ---
+function loadData() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    dailyEntries = JSON.parse(data);
   }
+  renderAll();
 }
 
-async function saveData() {
-  try {
-    await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dailyEntries)
-    });
-  } catch (err) {
-    console.error("Erreur de sauvegarde :", err);
-  }
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dailyEntries));
 }
 
-async function deleteEntry(section, date_ajout) {
-  try {
-    await fetch(`${API_URL}/delete`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ section, date_ajout })
-    });
-  } catch (err) {
-    console.error("Erreur côté backend lors de la suppression :", err);
-  }
+function deleteEntry(section, date_ajout) {
+  dailyEntries[section] = dailyEntries[section].filter(item => item.date_ajout !== date_ajout);
+  saveData();
 }
 
+// --- Export JSON ---
+function exportData() {
+  const blob = new Blob([JSON.stringify(dailyEntries, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dailyr_backup.json";
+  a.click();
+}
+
+// --- Import JSON ---
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      dailyEntries = imported;
+      saveData();
+      renderAll();
+    } catch (err) {
+      alert("Fichier JSON invalide !");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// --- Rendu ---
 function renderAll() {
   for (const key of ["fait", "afaire", "notes"]) {
     const container = document.getElementById(`${key}-container`);
@@ -135,15 +142,7 @@ function renderAll() {
         refLabel.onclick = handleEdit;
 
         const refValue = document.createElement("div");
-        if (item.reference === '-') {
-          refValue.textContent = item.reference;
-        } else {
-          const link = document.createElement("a");
-          link.href = `${url}/${item.reference}`;
-          link.target = "_blank";
-          link.textContent = item.reference;
-          refValue.appendChild(link);
-        }
+        refValue.textContent = item.reference;
 
         grid.appendChild(refLabel);
         grid.appendChild(refValue);
@@ -178,11 +177,7 @@ function renderAll() {
         // Bouton de suppression
         const trashBtn = document.createElement("button");
         trashBtn.className = "delete-icon";
-        trashBtn.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <path d="M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6Z" />
-          </svg>
-        `;
+        trashBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6Z" /></svg>`;
         trashBtn.onclick = () => {
           contextEntryMeta = { section: key, date_ajout: item.date_ajout };
           document.getElementById("confirm-delete").showModal();
@@ -201,16 +196,14 @@ function renderAll() {
   }
 }
 
-document.getElementById("confirm-delete-btn").onclick = async () => {
+document.getElementById("confirm-delete-btn").onclick = () => {
   if (!contextEntryMeta) return;
   const { section, date_ajout } = contextEntryMeta;
-  const index = dailyEntries[section].findIndex(item => item.date_ajout === date_ajout);
-
-  if (index !== -1) {
-    dailyEntries[section].splice(index, 1);
-    await deleteEntry(section, date_ajout);
-    renderAll();
-  }
-
+  deleteEntry(section, date_ajout);
+  renderAll();
   document.getElementById("confirm-delete").close();
 };
+
+// Boutons Import/Export (prévoir un input type="file" dans le HTML pour l'import)
+document.getElementById("export-btn").onclick = exportData;
+document.getElementById("import-file").onchange = (e) => importData(e.target.files[0]);
