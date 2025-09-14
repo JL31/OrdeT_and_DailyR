@@ -273,6 +273,10 @@
             <span>Données</span>
           </a>
           <div class="navbar-dropdown">
+            <a class="navbar-item" id="navbar-jira-url">
+              <span class="icon"><i class="fas"></i></span>
+              <span>Définir l'URL Jira</span>
+            </a>
             <a class="navbar-item" id="navbar-export">
               <span class="icon"><i class="fas fa-download"></i></span>
               <span>Exporter</span>
@@ -435,6 +439,29 @@
         <button class="button is-danger" id="confirm-delete-btn">Oui, supprimer</button>
         <button class="button modal-close">Non, annuler</button>
       </footer>
+    </div>
+  </div>
+
+  <!-- Modal de définition de l'URL pour Jira -->
+  <div class="modal" id="modal-set-jira-url">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Définition de l'URL Jira</p>
+        <button class="modal-close"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">URL vers le projet Jira</label>
+          <div class="control">
+            <input class="input" type="text" name="jira-url" id="jira-url-id">
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" id="set-jira-url" disabled>Valider</button>
+        <button class="button modal-close">Annuler</button>
+    </footer>
     </div>
   </div>
 
@@ -673,6 +700,11 @@
         showModal("modal-task-selector");
       };
 
+      document.getElementById('navbar-jira-url').onclick = () => {
+        document.getElementById("jira-url-id").value = storage.getUrl();
+        showModal("modal-set-jira-url");
+      };
+
       document.getElementById('navbar-export').onclick = () => {
         storage.exportData();
       };
@@ -706,6 +738,13 @@
         storage.addDailyEntry(section, entry);
         renderAll();
         hideModal("modal-task-selector");
+      };
+
+      // Définir l'URL du projet Jira
+      document.getElementById('set-jira-url').onclick = (e) => {
+        e.preventDefault();
+        const url = document.getElementById("jira-url-id").value;
+        storage.setUrl(url); 
       };
 
       // Formulaire principal

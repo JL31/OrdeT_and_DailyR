@@ -10,7 +10,8 @@ class UnifiedStorage {
         fait: [],
         afaire: [],
         notes: []
-      }
+      },
+      url: ''
     };
     this.load();
   }
@@ -67,6 +68,14 @@ class UnifiedStorage {
 
   save() {
     localStorage.setItem(UNIFIED_STORAGE_KEY, JSON.stringify(this.data));
+  }
+
+  setUrl(nouvelleUrl) {
+    this.data.url = nouvelleUrl;
+  }
+
+  getUrl() {
+    return this.data.url;
   }
 
   // Méthodes pour les sujets
