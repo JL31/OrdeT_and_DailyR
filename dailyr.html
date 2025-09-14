@@ -593,7 +593,6 @@
       const container = document.getElementById('task-list');
       container.innerHTML = '';
 
-      // On utilise searchAll si un filtre est fourni, sinon on récupère toutes les tâches daily
       const items = filter 
         ? storage.searchAll(filter) 
         : storage.getAllTasks();
@@ -615,12 +614,16 @@
           preview.appendChild(badge);
         }
 
-        // Infos principales
+        const ref = item.jira || item.reference || 'Sans référence';
+        const desc = item.resume || item.description || '-';
+        const commentaire = item.commentaire || 'Pas de commentaire';
+        const source = item.source || 'daily';
+
         const info = document.createElement('div');
         info.innerHTML = `
-          <div><strong>${item.jira || item.reference || 'Sans référence'}</strong> - ${item.resume || item.description}</div>
-          <div class="has-text-grey is-size-7">${item.commentaire || 'Pas de commentaire'}</div>
-          <div class="has-text-grey is-size-7"><em>Source: ${item.source || 'daily'}</em></div>
+          <div><strong>${ref}</strong> - ${desc}</div>
+          <div class="has-text-grey is-size-7">${commentaire}</div>
+          <div class="has-text-grey is-size-7"><em>Source: ${source}</em></div>
         `;
         preview.appendChild(info);
         taskItem.appendChild(preview);
