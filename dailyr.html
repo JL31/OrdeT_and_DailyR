@@ -510,7 +510,7 @@
 
             // Statut (si c'est lié à une tâche)
             if (item.linkedTaskId) {
-              const task = storage.getAllTasks().find(t => t.id === item.linkedTaskId);
+              const task = storage.searchAll().find(t => t.id === item.linkedTaskId);
               if (task) {
                 const statusRow = document.createElement("div");
                 statusRow.className = "grid-row";
@@ -593,7 +593,7 @@
       const container = document.getElementById('task-list');
       container.innerHTML = '';
 
-      const allTasks = storage.getAllTasks();
+      const allTasks = storage.searchAll();
       const filteredTasks = filter ? 
         allTasks.filter(task => 
           task.jira.toLowerCase().includes(filter.toLowerCase()) ||
