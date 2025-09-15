@@ -72,6 +72,7 @@ class UnifiedStorage {
 
   setUrl(nouvelleUrl) {
     this.data.url = nouvelleUrl;
+    this.save();
   }
 
   getUrl() {
