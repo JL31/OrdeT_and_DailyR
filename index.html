@@ -522,16 +522,14 @@
       };
 
       // Définir l'URL du projet Jira
-      document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById('set-jira-url');
-        if (btn) {
-          btn.onclick = (e) => {
-            e.preventDefault();
-            const url = document.getElementById("jira-url-id").value;
-            storage.setUrl(url);
-            hideModal("modal-set-jira-url");
-          };
-        }
+      const btn = document.getElementById('set-jira-url');
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = document.getElementById("jira-url-id").value;
+        storage.setUrl(url);
+        hideModal("modal-set-jira-url");
+        });
       });
 
       // Forms
