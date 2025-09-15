@@ -741,12 +741,17 @@
       };
 
       // Définir l'URL du projet Jira
-      document.getElementById('set-jira-url').onclick = (e) => {
-        e.preventDefault();
-        const url = document.getElementById("jira-url-id").value;
-        storage.setUrl(url); 
-        hideModal("modal-set-jira-url");
-      };
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById('set-jira-url');
+        if (btn) {
+          btn.onclick = (e) => {
+            e.preventDefault();
+            const url = document.getElementById("jira-url-id").value;
+            storage.setUrl(url);
+            hideModal("modal-set-jira-url");
+          };
+        }
+      });
 
       // Formulaire principal
       document.getElementById("form-entry").onsubmit = (e) => {
