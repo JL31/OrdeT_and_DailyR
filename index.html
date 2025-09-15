@@ -370,7 +370,6 @@
     let editingType = null;
     const sujetOrder = ["Terminé", "En attente", "En validation", "En revue", "En cours", "A démarrer"];
     const revueOrder = ["Faite", "En cours", "A faire"];
-    const url = "https://jira.portal.TUTU.com/browse";
 
     const storage = window.unifiedStorage;
 
@@ -447,7 +446,7 @@
 
           const link = document.createElement("a");
           link.className = "line-link has-text-link";
-          link.href = `${url}/${item.jira}`;
+          link.href = `${storage.getUrl()}/${item.jira}`;
           link.target = "_blank";
           link.textContent = item.jira;
 
