@@ -745,6 +745,7 @@
         e.preventDefault();
         const url = document.getElementById("jira-url-id").value;
         storage.setUrl(url); 
+        hideModal("modal-set-jira-url");
       };
 
       // Formulaire principal
