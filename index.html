@@ -156,7 +156,6 @@
   <!-- Navbar fixe -->
   <nav class="navbar is-dark is-fixed-top" role="navigation">
     <div class="navbar-brand">
-      <!--<a class="navbar-item" href="#" onclick="window.location.reload()">-->
       <a class="navbar-item" href="index.html">
         <strong>OrdeT</strong>
       </a>
@@ -194,6 +193,10 @@
             <span>Données</span>
           </a>
           <div class="navbar-dropdown">
+            <a class="navbar-item" id="navbar-jira-url">
+              <span class="icon"><i class="fas"></i></span>
+              <span>URL Jira</span>
+            </a>
             <a class="navbar-item" id="navbar-export">
               <span class="icon"><i class="fas fa-download"></i></span>
               <span>Exporter</span>
@@ -335,6 +338,29 @@
         <button class="button is-success" type="submit" form="form-revue">Valider</button>
         <button class="button modal-close">Annuler</button>
       </footer>
+    </div>
+  </div>
+
+  <!-- Modal de définition de l'URL pour Jira -->
+  <div class="modal" id="modal-set-jira-url">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Définition de l'URL Jira</p>
+        <button class="modal-close"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">URL vers le projet Jira</label>
+          <div class="control">
+            <input class="input" type="text" name="jira-url" id="jira-url-id">
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" id="set-jira-url">Valider</button>
+        <button class="button modal-close">Annuler</button>
+    </footer>
     </div>
   </div>
 
@@ -480,6 +506,11 @@
         showModal("modal-revue");
       };
 
+      document.getElementById('navbar-jira-url').onclick = () => {
+        document.getElementById("jira-url-id").value = storage.getUrl();
+        showModal("modal-set-jira-url");
+      };
+
       document.getElementById('navbar-export').onclick = () => {
         storage.exportData();
       };
@@ -489,6 +520,19 @@
           storage.importData(e.target.files[0]);
         }
       };
+
+      // Définir l'URL du projet Jira
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById('set-jira-url');
+        if (btn) {
+          btn.onclick = (e) => {
+            e.preventDefault();
+            const url = document.getElementById("jira-url-id").value;
+            storage.setUrl(url);
+            hideModal("modal-set-jira-url");
+          };
+        }
+      });
 
       // Forms
       document.getElementById("form-sujet").onsubmit = (e) => {
