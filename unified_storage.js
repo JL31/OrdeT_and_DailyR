@@ -76,7 +76,7 @@ class UnifiedStorage {
   }
 
   getUrl() {
-    return this.data.url;
+    return this.data.url.replace(/\/+$/, ''); // remove trailing slashes at then end (if necessary)
   }
 
   // Méthodes pour les sujets
