@@ -493,88 +493,127 @@
 
     // Rendu des données
     function renderAll() {
-for (const section of ["fait", "afaire", "notes"]) {
-const container = document.getElementById(`${section}-container`);
-container.innerHTML = "";
+      for (const section of ["fait", "afaire", "notes"]) {
+        const container = document.getElementById(`${section}-container`);
+        container.innerHTML = "";
 
+        storage.data.dailyEntries[section]
+          .sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))
+          .forEach(item => {
+            const line = document.createElement("div");
+            line.className = "line";
+            if (item.urgent) line.classList.add("urgent");
 
-storage.data.dailyEntries[section]
-.sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))
-.forEach(item => {
-const line = document.createElement("div");
-line.className = "line";
-if (item.urgent) line.classList.add("urgent");
+            const content = document.createElement("div");
+            content.className = "line-content";
 
+            const handleEdit = () => {
+              editingItem = item;
+              editingSection = section;
+              const form = document.getElementById("form-entry");
+              form.section.value = section;
+              form.reference.value = item.reference || '';
+              form.description.value = item.description || '';
+              form.commentaire.value = item.commentaire || '';
+              form.urgent.checked = item.urgent || false;
+              showModal("modal-entry");
+            };
 
-const content = document.createElement("div");
-content.className = "line-content";
+            // Référence
+            if (item.reference) {
+              const refRow = document.createElement("div");
+              refRow.className = "grid-row";
+              const refLabel = document.createElement("div");
+              refLabel.className = "label-col";
+              refLabel.textContent = "Référence :";
+              refLabel.onclick = handleEdit;
+              const refValue = document.createElement("div");
+              refValue.className = "value-col has-text-weight-semibold";
+              refValue.textContent = item.reference;
+              refRow.appendChild(refLabel);
+              refRow.appendChild(refValue);
+              content.appendChild(refRow);
+            }
 
+            // Statut (si c'est lié à une tâche)
+            if (item.linkedTaskId) {
+              const task = storage.getAllTasks().find(t => t.id === item.linkedTaskId);
+              if (task) {
+                const statusRow = document.createElement("div");
+                statusRow.className = "grid-row";
+                const statusLabel = document.createElement("div");
+                statusLabel.className = "label-col";
+                statusLabel.textContent = "Statut :";
+                statusLabel.onclick = handleEdit;
+                const statusValue = document.createElement("div");
+                statusValue.className = "value-col";
 
-const handleEdit = () => {
-editingItem = item;
-editingSection = section;
-const form = document.getElementById("form-entry");
-form.section.value = section;
-form.reference.value = item.reference || '';
-form.description.value = item.description || '';
-form.commentaire.value = item.commentaire || '';
-form.urgent.checked = item.urgent || false;
-showModal("modal-entry");
-};
+                const badge = document.createElement("span");
+                let badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
+                badge.className = `badge ${badgeClass}`;
+                badge.textContent = task.statut;
+                statusValue.appendChild(badge);
 
+                statusRow.appendChild(statusLabel);
+                statusRow.appendChild(statusValue);
+                content.appendChild(statusRow);
+              }
+            }
 
-// Référence
-if (item.reference) {
-const refRow = document.createElement("div");
-refRow.className = "grid-row";
-const refLabel = document.createElement("div");
-refLabel.className = "label-col";
-refLabel.textContent = "Référence :";
-refLabel.onclick = handleEdit;
-const refValue = document.createElement("div");
-refValue.className = "value-col has-text-weight-semibold";
-refValue.textContent = item.reference;
-refRow.appendChild(refLabel);
-refRow.appendChild(refValue);
-content.appendChild(refRow);
-}
+            // Description
+            const descRow = document.createElement("div");
+            descRow.className = "grid-row";
+            const descLabel = document.createElement("div");
+            descLabel.className = "label-col";
+            descLabel.textContent = "Description :";
+            descLabel.onclick = handleEdit;
+            const descValue = document.createElement("div");
+            descValue.className = "value-col";
+            descValue.textContent = item.description || '-';
+            descRow.appendChild(descLabel);
+            descRow.appendChild(descValue);
+            content.appendChild(descRow);
 
+            // Commentaire
+            if (item.commentaire) {
+              const comRow = document.createElement("div");
+              comRow.className = "grid-row";
+              const comLabel = document.createElement("div");
+              comLabel.className = "label-col";
+              comLabel.textContent = "Commentaire :";
+              comLabel.onclick = handleEdit;
+              const comValue = document.createElement("div");
+              comValue.className = "value-col has-text-grey";
+              comValue.textContent = item.commentaire;
+              comRow.appendChild(comLabel);
+              comRow.appendChild(comValue);
+              content.appendChild(comRow);
+            }
 
-// Badge + lien Jira si lié à une tâche
-if (item.linkedTaskId) {
-const task = storage.getAllTasks().find(t => t.id === item.linkedTaskId);
-if (task) {
-const taskRow = document.createElement("div");
-taskRow.className = "grid-row";
+            line.appendChild(content);
 
+            // Bouton de suppression
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.onclick = () => {
+              contextEntryMeta = { section, id: item.id };
+              showModal("modal-confirm-delete");
+            };
 
-const taskLabel = document.createElement("div");
-taskLabel.className = "label-col";
-taskLabel.textContent = "Tâche liée :";
-taskLabel.onclick = handleEdit;
+            line.appendChild(deleteBtn);
 
-
-const taskValue = document.createElement("div");
-taskValue.className = "value-col";
-
-
-// Badge statut
-if (task.statut) {
-const badge = document.createElement("span");
-let badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-badge.className = `badge ${badgeClass}`;
-badge.textContent = task.statut;
-taskValue.appendChild(badge);
-taskValue.appendChild(document.createTextNode(" "));
-}
-
-
-// Lien Jira
-if (task.jira) {
-const link = document.createElement("a");
-const baseUrl = (storage.getUrl() || '').replace(/\/+$/, '');
-link.href = `${baseUrl}/${task.jira}`;
-}
+            // Filigrane urgent
+            if (item.urgent) {
+              const watermark = document.createElement("div");
+              watermark.className = "urgent-watermark";
+              watermark.textContent = "URGENT";
+              line.appendChild(watermark);
+            }
+            container.appendChild(line);
+          });
+      }
+    }
 
     // Affichage des tâches disponibles
     function renderTaskSelector(filter = '') {
