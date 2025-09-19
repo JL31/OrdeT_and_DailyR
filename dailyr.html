@@ -537,26 +537,51 @@
 
             // Statut (si c'est lié à une tâche)
             if (item.linkedTaskId) {
-              const task = storage.getAllTasks().find(t => t.id === item.linkedTaskId);
+              // match IDs en string pour éviter les problèmes type number/string
+              const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
               if (task) {
-                const statusRow = document.createElement("div");
-                statusRow.className = "grid-row";
-                const statusLabel = document.createElement("div");
-                statusLabel.className = "label-col";
-                statusLabel.textContent = "Statut :";
-                statusLabel.onclick = handleEdit;
-                const statusValue = document.createElement("div");
-                statusValue.className = "value-col";
+                const taskRow = document.createElement("div");
+                taskRow.className = "grid-row";
 
-                const badge = document.createElement("span");
-                let badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-                badge.className = `badge ${badgeClass}`;
-                badge.textContent = task.statut;
-                statusValue.appendChild(badge);
+                const taskLabel = document.createElement("div");
+                taskLabel.className = "label-col";
+                taskLabel.textContent = "Tâche liée :";
+                taskLabel.onclick = handleEdit;
 
-                statusRow.appendChild(statusLabel);
-                statusRow.appendChild(statusValue);
-                content.appendChild(statusRow);
+                const taskValue = document.createElement("div");
+                taskValue.className = "value-col";
+
+                // Badge statut (si présent)
+                if (task.statut) {
+                  const badge = document.createElement("span");
+                  const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
+                  badge.className = `badge ${badgeClass}`;
+                  badge.textContent = task.statut;
+                  taskValue.appendChild(badge);
+                  taskValue.appendChild(document.createTextNode(" "));
+                }
+
+                // Lien Jira (si présent)
+                if (task.jira) {
+                  const baseUrl = (typeof storage.getUrl === 'function' ? (storage.getUrl() || '') : '').replace(/\/+$/, '');
+                  const link = document.createElement("a");
+                  link.href = baseUrl ? `${baseUrl}/${task.jira}` : `#${task.jira}`;
+                  link.target = "_blank";
+                  link.textContent = task.jira;
+                  taskValue.appendChild(link);
+                }
+
+                // On peut aussi montrer le résumé si tu veux
+                if (task.resume) {
+                  const resumeSpan = document.createElement("div");
+                  resumeSpan.style.marginTop = "4px";
+                  resumeSpan.textContent = task.resume;
+                  taskValue.appendChild(resumeSpan);
+                }
+
+                taskRow.appendChild(taskLabel);
+                taskRow.appendChild(taskValue);
+                content.appendChild(taskRow);
               }
             }
 
