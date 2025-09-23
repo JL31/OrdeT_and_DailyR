@@ -36,3 +36,557 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      border-bottom: 2px solid #dbdbdb;
+      margin-bottom: 1rem;
+    }
+
+    .group-header:hover {
+      color: #3273dc;
+    }
+
+    .group-content {
+      padding: 0;
+    }
+
+    .line {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s;
+      background-color: #fafafa;
+    }
+
+    .line:hover {
+      background-color: #f0f0f0;
+    }
+
+    .badge {
+      font-weight: bold;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .badge:hover {
+      transform: scale(1.05);
+    }
+
+    .badge.terminé {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge.enattente {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge.envalidation {
+      background-color: #ffcc80;
+      color: #f57f17;
+    }
+
+    .badge.enrevue {
+      background-color: #fef9c3;
+      color: #92400e;
+    }
+
+    .badge.encours {
+      background-color: #bfdbfe;
+      color: #1e40af;
+    }
+
+    .badge.adémarrer {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    .badge.faite {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge.afaire {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    .line-link {
+      width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 0;
+    }
+
+    .line-resume,
+    .line-comment {
+      flex: 1;
+      word-wrap: break-word;
+      min-width: 0;
+    }
+
+    .arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .group.is-collapsed .arrow {
+      transform: rotate(-90deg);
+    }
+
+    .separator {
+      border-top: 2px solid #dbdbdb;
+      margin: 3rem auto;
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar fixe -->
+  <nav class="navbar is-dark is-fixed-top" role="navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="index.html">
+        <strong>OrdeT</strong>
+      </a>
+    </div>
+
+    <div class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="dailyr.html">
+          <span class="icon"><i class="fas fa-calendar-day"></i></span>
+          <span>DailyR</span>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>Ajouter</span>
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" id="navbar-add-sujet">
+              <span class="icon"><i class="fas fa-tasks"></i></span>
+              <span>Nouveau Sujet</span>
+            </a>
+            <a class="navbar-item" id="navbar-add-revue">
+              <span class="icon"><i class="fas fa-search"></i></span>
+              <span>Nouvelle Revue</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            <span class="icon"><i class="fas fa-cog"></i></span>
+            <span>Données</span>
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" id="navbar-jira-url">
+              <span class="icon"><i class="fas"></i></span>
+              <span>URL Jira</span>
+            </a>
+            <a class="navbar-item" id="navbar-export">
+              <span class="icon"><i class="fas fa-download"></i></span>
+              <span>Exporter</span>
+            </a>
+            <label class="navbar-item" for="navbar-import-file">
+              <span class="icon"><i class="fas fa-upload"></i></span>
+              <span>Importer</span>
+              <input type="file" id="navbar-import-file" accept="application/json" style="display: none;">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container is-fluid">
+    <!-- Section Sujets -->
+    <section class="section">
+      <h1 class="title is-2 has-text-centered">
+        <span class="icon is-large"><i class="fas fa-tasks"></i></span>
+        Sujets
+      </h1>
+      <div id="sujets-container"></div>
+    </section>
+
+    <div class="separator"></div>
+
+    <!-- Section Revues -->
+    <section class="section">
+      <h1 class="title is-2 has-text-centered">
+        <span class="icon is-large"><i class="fas fa-search"></i></span>
+        Revues
+      </h1>
+      <div id="revues-container"></div>
+    </section>
+  </main>
+
+  <!-- Modal pour Sujet -->
+  <div class="modal" id="modal-sujet">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Ajouter / Modifier un sujet</p>
+        <button class="delete modal-close"></button>
+      </header>
+      <section class="modal-card-body">
+        <form id="form-sujet">
+          <div class="field">
+            <label class="label">Statut</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="statut">
+                  <option>Terminé</option>
+                  <option>En attente</option>
+                  <option>En validation</option>
+                  <option>En revue</option>
+                  <option>En cours</option>
+                  <option>A démarrer</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Référence Jira</label>
+            <div class="control">
+              <input class="input" type="text" name="jira" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Résumé</label>
+            <div class="control">
+              <input class="input" type="text" name="resume" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Commentaire</label>
+            <div class="control">
+              <textarea class="textarea" name="commentaire" rows="3"></textarea>
+            </div>
+          </div>
+        </form>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" type="submit" form="form-sujet">Valider</button>
+        <button class="button modal-close">Annuler</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal pour Revue -->
+  <div class="modal" id="modal-revue">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Ajouter / Modifier une revue</p>
+        <button class="delete modal-close"></button>
+      </header>
+      <section class="modal-card-body">
+        <form id="form-revue">
+          <div class="field">
+            <label class="label">Statut</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="statut">
+                  <option>Faite</option>
+                  <option>En cours</option>
+                  <option>A faire</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Référence Jira</label>
+            <div class="control">
+              <input class="input" type="text" name="jira" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Résumé</label>
+            <div class="control">
+              <input class="input" type="text" name="resume" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Commentaire</label>
+            <div class="control">
+              <textarea class="textarea" name="commentaire" rows="3"></textarea>
+            </div>
+          </div>
+        </form>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" type="submit" form="form-revue">Valider</button>
+        <button class="button modal-close">Annuler</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal de définition de l'URL pour Jira -->
+  <div class="modal" id="modal-set-jira-url">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Définition de l'URL Jira</p>
+        <button class="modal-close"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">URL vers le projet Jira</label>
+          <div class="control">
+            <input class="input" type="text" name="jira-url" id="jira-url-id">
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" id="set-jira-url">Valider</button>
+        <button class="button modal-close">Annuler</button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let editingItem = null;
+    let editingType = null;
+    const sujetOrder = ["Terminé", "En attente", "En validation", "En revue", "En cours", "A démarrer"];
+    const revueOrder = ["Faite", "En cours", "A faire"];
+    const foldedByDefault = ["Terminé", "Faite"]; // Catégories pliées par défaut
+
+    const storage = window.unifiedStorage;
+
+    // Gestion des modals
+    function initModals() {
+      document.querySelectorAll('.modal-background, .modal-close').forEach(el => {
+        el.addEventListener('click', () => {
+          el.closest('.modal').classList.remove('is-active');
+        });
+      });
+    }
+
+    function showModal(modalId) {
+      document.getElementById(modalId).classList.add('is-active');
+    }
+
+    function hideModal(modalId) {
+      document.getElementById(modalId).classList.remove('is-active');
+    }
+
+    // Rendu des sections
+    function renderAll() {
+      renderSection("sujets-container", groupByStatus(storage.data.sujets), "sujet");
+      renderSection("revues-container", groupByStatus(storage.data.revues), "revue");
+    }
+
+    function groupByStatus(items) {
+      const map = {};
+      for (const item of items.sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))) {
+        if (!map[item.statut]) map[item.statut] = [];
+        map[item.statut].push(item);
+      }
+      return map;
+    }
+
+    function renderSection(containerId, grouped, type) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      const order = type === "sujet" ? sujetOrder : revueOrder;
+
+      for (const status of order) {
+        if (!grouped[status]) continue;
+        const items = grouped[status];
+
+        const group = document.createElement("div");
+        group.className = "group";
+
+        // Plier par défaut si dans la liste foldedByDefault
+        if (foldedByDefault.includes(status)) {
+          group.classList.add("is-collapsed");
+        }
+
+        const header = document.createElement("div");
+        header.className = "group-header";
+        
+        const arrow = document.createElement("span");
+        arrow.className = "arrow";
+        arrow.innerHTML = "▼";
+
+        header.appendChild(arrow);
+        header.appendChild(document.createTextNode(` ${status} (${items.length})`));
+
+        header.onclick = () => {
+          group.classList.toggle("is-collapsed");
+        };
+
+        const content = document.createElement("div");
+        content.className = "group-content";
+
+        for (const item of items) {
+          const line = document.createElement("div");
+          line.className = "line";
+
+          const badge = document.createElement("span");
+          let badgeClass = item.statut.replace(/\s+/g, '').toLowerCase();
+          badge.className = `badge ${badgeClass}`;
+          badge.textContent = item.statut;
+
+          const link = document.createElement("a");
+          link.className = "line-link has-text-link";
+          link.href = `${storage.getUrl()}/${item.jira}`;
+          link.target = "_blank";
+          link.textContent = item.jira;
+
+          const resume = document.createElement("span");
+          resume.className = "line-resume";
+          resume.textContent = item.resume;
+
+          const commentaire = document.createElement("span");
+          commentaire.className = "line-comment has-text-grey";
+          commentaire.textContent = item.commentaire || "-";
+
+          line.appendChild(badge);
+          line.appendChild(link);
+          line.appendChild(resume);
+          line.appendChild(commentaire);
+
+          badge.onclick = (e) => {
+            e.stopPropagation();
+            editingItem = item;
+            editingType = type;
+            const modal = document.getElementById(`modal-${type}`);
+            const form = modal.querySelector("form");
+            form.statut.value = item.statut;
+            form.jira.value = item.jira;
+            form.resume.value = item.resume;
+            form.commentaire.value = item.commentaire || '';
+            showModal(`modal-${type}`);
+          };
+
+          content.appendChild(line);
+        }
+
+        group.appendChild(header);
+        group.appendChild(content);
+        container.appendChild(group);
+      }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      initModals();
+      renderAll();
+
+      // Navbar actions
+      document.getElementById('navbar-add-sujet').onclick = () => {
+        editingItem = null;
+        editingType = "sujet";
+        document.getElementById("form-sujet").reset();
+        showModal("modal-sujet");
+      };
+
+      document.getElementById('navbar-add-revue').onclick = () => {
+        editingItem = null;
+        editingType = "revue";
+        document.getElementById("form-revue").reset();
+        showModal("modal-revue");
+      };
+
+      document.getElementById('navbar-jira-url').onclick = () => {
+        document.getElementById("jira-url-id").value = storage.getUrl();
+        showModal("modal-set-jira-url");
+      };
+
+      document.getElementById('navbar-export').onclick = () => {
+        storage.exportData();
+      };
+
+      document.getElementById('navbar-import-file').onchange = (e) => {
+        if (e.target.files[0]) {
+          storage.importData(e.target.files[0]);
+        }
+      };
+
+      // Définir l'URL du projet Jira
+      const btn = document.getElementById('set-jira-url');
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = document.getElementById("jira-url-id").value;
+        storage.setUrl(url);
+        hideModal("modal-set-jira-url");
+      });
+
+      // Forms
+      document.getElementById("form-sujet").onsubmit = (e) => {
+        e.preventDefault();
+        const form = new FormData(e.target);
+        const data = {
+          statut: form.get('statut'),
+          jira: form.get('jira').trim(),
+          resume: form.get('resume').trim(),
+          commentaire: form.get('commentaire').trim(),
+        };
+
+        if (editingItem && editingType === "sujet") {
+          storage.updateSujet(editingItem.id, data);
+        } else {
+          storage.addSujet(data);
+        }
+
+        editingItem = null;
+        editingType = null;
+        renderAll();
+        hideModal("modal-sujet");
+      };
+
+      document.getElementById("form-revue").onsubmit = (e) => {
+        e.preventDefault();
+        const form = new FormData(e.target);
+        const data = {
+          statut: form.get('statut'),
+          jira: form.get('jira').trim(),
+          resume: form.get('resume').trim(),
+          commentaire: form.get('commentaire').trim(),
+        };
+
+        if (editingItem && editingType === "revue") {
+          storage.updateRevue(editingItem.id, data);
+        } else {
+          storage.addRevue(data);
+        }
+
+        editingItem = null;
+        editingType = null;
+        renderAll();
+        hideModal("modal-revue");
+      };
+
+      // Burger menu pour mobile
+      const burger = document.querySelector('.navbar-burger');
+      const menu = document.querySelector('.navbar-menu');
+      
+      if (burger) {
+        burger.addEventListener('click', () => {
+          burger.classList.toggle('is-active');
+          menu.classList.toggle('is-active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
