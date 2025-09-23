@@ -530,30 +530,36 @@
               showModal("modal-entry");
             };
 
-            // Statut avec badge si lié à une tâche
+            // Statut avec badge si lié à une tâche (par ID ou par référence Jira)
+            let linkedTask = null;
             if (item.linkedTaskId) {
-              const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
-              if (task && task.statut) {
-                const statusRow = document.createElement("div");
-                statusRow.className = "grid-row";
-                const statusLabel = document.createElement("div");
-                statusLabel.className = "label-col";
-                statusLabel.textContent = "Statut :";
-                statusLabel.onclick = handleEdit;
-                
-                const statusValue = document.createElement("div");
-                statusValue.className = "value-col";
+              linkedTask = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
+            }
+            // Si pas trouvé par ID, chercher par référence Jira
+            if (!linkedTask && item.reference) {
+              linkedTask = storage.getAllTasks().find(t => t.jira === item.reference);
+            }
 
-                const badge = document.createElement("span");
-                const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-                badge.className = `badge ${badgeClass}`;
-                badge.textContent = task.statut;
-                statusValue.appendChild(badge);
+            if (linkedTask && linkedTask.statut) {
+              const statusRow = document.createElement("div");
+              statusRow.className = "grid-row";
+              const statusLabel = document.createElement("div");
+              statusLabel.className = "label-col";
+              statusLabel.textContent = "Statut :";
+              statusLabel.onclick = handleEdit;
+              
+              const statusValue = document.createElement("div");
+              statusValue.className = "value-col";
 
-                statusRow.appendChild(statusLabel);
-                statusRow.appendChild(statusValue);
-                content.appendChild(statusRow);
-              }
+              const badge = document.createElement("span");
+              const badgeClass = linkedTask.statut.replace(/\s+/g, '').toLowerCase();
+              badge.className = `badge ${badgeClass}`;
+              badge.textContent = linkedTask.statut;
+              statusValue.appendChild(badge);
+
+              statusRow.appendChild(statusLabel);
+              statusRow.appendChild(statusValue);
+              content.appendChild(statusRow);
             }
 
             // Référence avec lien Jira si applicable
