@@ -92,7 +92,8 @@ class UnifiedStorage {
   updateSujet(id, updates) {
     const index = this.data.sujets.findIndex(s => s.id === id);
     if (index !== -1) {
-      this.data.sujets[index] = { ...this.data.sujets[index], ...updates };
+      // Mise à jour en place pour éviter la duplication
+      Object.assign(this.data.sujets[index], updates);
       this.save();
       return this.data.sujets[index];
     }
@@ -121,7 +122,8 @@ class UnifiedStorage {
   updateRevue(id, updates) {
     const index = this.data.revues.findIndex(r => r.id === id);
     if (index !== -1) {
-      this.data.revues[index] = { ...this.data.revues[index], ...updates };
+      // Mise à jour en place pour éviter la duplication
+      Object.assign(this.data.revues[index], updates);
       this.save();
       return this.data.revues[index];
     }
@@ -149,9 +151,18 @@ class UnifiedStorage {
   updateDailyEntry(oldSection, id, newSection, updates) {
     const index = this.data.dailyEntries[oldSection].findIndex(e => e.id === id);
     if (index !== -1) {
-      const entry = { ...this.data.dailyEntries[oldSection][index], ...updates };
-      this.data.dailyEntries[oldSection].splice(index, 1);
-      this.data.dailyEntries[newSection].push(entry);
+      const entry = this.data.dailyEntries[oldSection][index];
+      // Mise à jour des propriétés
+      Object.assign(entry, updates);
+      
+      // Si changement de section, déplacer l'élément
+      if (oldSection !== newSection) {
+        // Retirer de l'ancienne section
+        this.data.dailyEntries[oldSection].splice(index, 1);
+        // Ajouter dans la nouvelle section
+        this.data.dailyEntries[newSection].push(entry);
+      }
+      
       this.save();
       return entry;
     }
@@ -230,6 +241,8 @@ class UnifiedStorage {
 
   getAllTasks() {
     return [
+      ...this.data.sujets,
+      ...this.data.revues,
       ...this.data.dailyEntries.fait,
       ...this.data.dailyEntries.afaire,
       ...this.data.dailyEntries.notes
