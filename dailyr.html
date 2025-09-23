@@ -530,7 +530,33 @@
               showModal("modal-entry");
             };
 
-            // Référence avec badge et lien Jira si applicable
+            // Statut avec badge si lié à une tâche
+            if (item.linkedTaskId) {
+              const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
+              if (task && task.statut) {
+                const statusRow = document.createElement("div");
+                statusRow.className = "grid-row";
+                const statusLabel = document.createElement("div");
+                statusLabel.className = "label-col";
+                statusLabel.textContent = "Statut :";
+                statusLabel.onclick = handleEdit;
+                
+                const statusValue = document.createElement("div");
+                statusValue.className = "value-col";
+
+                const badge = document.createElement("span");
+                const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
+                badge.className = `badge ${badgeClass}`;
+                badge.textContent = task.statut;
+                statusValue.appendChild(badge);
+
+                statusRow.appendChild(statusLabel);
+                statusRow.appendChild(statusValue);
+                content.appendChild(statusRow);
+              }
+            }
+
+            // Référence avec lien Jira si applicable
             if (item.reference) {
               const refRow = document.createElement("div");
               refRow.className = "grid-row";
@@ -541,18 +567,6 @@
               
               const refValue = document.createElement("div");
               refValue.className = "value-col";
-
-              // Si c'est lié à une tâche, afficher le badge et le lien
-              if (item.linkedTaskId) {
-                const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
-                if (task && task.statut) {
-                  const badge = document.createElement("span");
-                  const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-                  badge.className = `badge ${badgeClass}`;
-                  badge.textContent = task.statut;
-                  refValue.appendChild(badge);
-                }
-              }
 
               // Créer le lien Jira
               const baseUrl = storage.getUrl();
