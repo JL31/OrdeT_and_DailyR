@@ -9,7 +9,7 @@
   <script src="unified_storage.js"></script>
   <style>
     body {
-      padding-top: 3.5rem; /* Espace pour la navbar fixe */
+      padding-top: 3.5rem;
     }
 
     .navbar {
@@ -22,8 +22,6 @@
 
     .group {
       margin: 1.5rem 0;
-      border: 1px solid #dbdbdb;
-      border-radius: 0.5rem;
       background: white;
     }
 
@@ -34,21 +32,21 @@
     .group-header {
       cursor: pointer;
       font-weight: bold;
-      padding: 1rem 1.5rem;
-      background: #f5f5f5;
-      border-radius: 0.5rem 0.5rem 0 0;
+      padding: 1rem 0;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       transition: background-color 0.2s;
+      border-bottom: 2px solid #dbdbdb;
+      margin-bottom: 1rem;
     }
 
     .group-header:hover {
-      background: #eeeeee;
+      color: #3273dc;
     }
 
     .group-content {
-      padding: 1rem;
+      padding: 0;
     }
 
     .line {
@@ -57,21 +55,19 @@
       align-items: stretch;
       padding: 1rem;
       margin: 0.5rem 0;
-      border: 1px solid #e0e0e0;
       border-radius: 0.5rem;
-      background-color: white;
+      background-color: #fafafa;
       transition: background-color 0.2s;
       position: relative;
     }
 
     .line:hover {
-      background-color: #f8f9fa;
-      border-color: #d0d0d0;
+      background-color: #f0f0f0;
     }
 
     .line.urgent {
-      border: 2px solid #ff3860;
-      background: linear-gradient(135deg, rgba(255, 56, 96, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+      background: linear-gradient(135deg, rgba(255, 56, 96, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+      border-left: 4px solid #ff3860;
     }
 
     .urgent-watermark {
@@ -119,6 +115,10 @@
       color: #363636;
       word-wrap: break-word;
       line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .delete-btn {
@@ -127,11 +127,12 @@
       justify-content: center;
       background-color: #ffebee;
       border: none;
-      border-radius: 0 0.5rem 0.5rem 0;
+      border-radius: 0.5rem;
       cursor: pointer;
       padding: 0 1rem;
       transition: background-color 0.2s ease;
       color: #c62828;
+      margin-left: 1rem;
     }
 
     .delete-btn:hover {
@@ -144,6 +145,7 @@
       border-radius: 1rem;
       font-size: 0.8rem;
       white-space: nowrap;
+      margin-right: 0.5rem;
     }
 
     .badge.terminé {
@@ -228,13 +230,22 @@
       gap: 0.5rem;
       font-size: 0.9rem;
     }
+
+    .jira-link {
+      color: #3273dc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .jira-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <!-- Navbar fixe -->
   <nav class="navbar is-dark is-fixed-top" role="navigation">
     <div class="navbar-brand">
-      <!--<a class="navbar-item" href="#" onclick="window.location.reload()">-->
       <a class="navbar-item" href="dailyr.html">
         <strong>DailyR</strong>
       </a>
@@ -519,7 +530,7 @@
               showModal("modal-entry");
             };
 
-            // Référence
+            // Référence avec badge et lien Jira si applicable
             if (item.reference) {
               const refRow = document.createElement("div");
               refRow.className = "grid-row";
@@ -527,19 +538,47 @@
               refLabel.className = "label-col";
               refLabel.textContent = "Référence :";
               refLabel.onclick = handleEdit;
+              
               const refValue = document.createElement("div");
-              refValue.className = "value-col has-text-weight-semibold";
-              refValue.textContent = item.reference;
+              refValue.className = "value-col";
+
+              // Si c'est lié à une tâche, afficher le badge et le lien
+              if (item.linkedTaskId) {
+                const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
+                if (task && task.statut) {
+                  const badge = document.createElement("span");
+                  const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
+                  badge.className = `badge ${badgeClass}`;
+                  badge.textContent = task.statut;
+                  refValue.appendChild(badge);
+                }
+              }
+
+              // Créer le lien Jira
+              const baseUrl = storage.getUrl();
+              if (baseUrl && item.reference) {
+                const link = document.createElement("a");
+                link.className = "jira-link";
+                link.href = `${baseUrl}/${item.reference}`;
+                link.target = "_blank";
+                link.textContent = item.reference;
+                refValue.appendChild(link);
+              } else {
+                const span = document.createElement("span");
+                span.className = "has-text-weight-semibold";
+                span.textContent = item.reference;
+                refValue.appendChild(span);
+              }
+
               refRow.appendChild(refLabel);
               refRow.appendChild(refValue);
               content.appendChild(refRow);
             }
 
-            // Statut (si c'est lié à une tâche)
+            // Tâche liée (si différente de la référence)
             if (item.linkedTaskId) {
-              // match IDs en string pour éviter les problèmes type number/string
               const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
-              if (task) {
+              if (task && task.resume) {
                 const taskRow = document.createElement("div");
                 taskRow.className = "grid-row";
 
@@ -550,34 +589,7 @@
 
                 const taskValue = document.createElement("div");
                 taskValue.className = "value-col";
-
-                // Badge statut (si présent)
-                if (task.statut) {
-                  const badge = document.createElement("span");
-                  const badgeClass = task.statut.replace(/\s+/g, '').toLowerCase();
-                  badge.className = `badge ${badgeClass}`;
-                  badge.textContent = task.statut;
-                  taskValue.appendChild(badge);
-                  taskValue.appendChild(document.createTextNode(" "));
-                }
-
-                // Lien Jira (si présent)
-                if (task.jira) {
-                  const baseUrl = (typeof storage.getUrl === 'function' ? (storage.getUrl() || '') : '').replace(/\/+$/, '');
-                  const link = document.createElement("a");
-                  link.href = baseUrl ? `${baseUrl}/${task.jira}` : `#${task.jira}`;
-                  link.target = "_blank";
-                  link.textContent = task.jira;
-                  taskValue.appendChild(link);
-                }
-
-                // On peut aussi montrer le résumé si tu veux
-                if (task.resume) {
-                  const resumeSpan = document.createElement("div");
-                  resumeSpan.style.marginTop = "4px";
-                  resumeSpan.textContent = task.resume;
-                  taskValue.appendChild(resumeSpan);
-                }
+                taskValue.textContent = task.resume;
 
                 taskRow.appendChild(taskLabel);
                 taskRow.appendChild(taskValue);
