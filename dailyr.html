@@ -504,11 +504,14 @@
 
     // Rendu des données
     function renderAll() {
+      const dailyEntries = storage.getDailyEntries();
       for (const section of ["fait", "afaire", "notes"]) {
         const container = document.getElementById(`${section}-container`);
         container.innerHTML = "";
 
-        storage.data.dailyEntries[section]
+        if (!dailyEntries[section]) continue;
+
+        dailyEntries[section]
           .sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))
           .forEach(item => {
             const line = document.createElement("div");
@@ -533,7 +536,7 @@
             // Statut avec badge si lié à une tâche (par ID ou par référence Jira)
             let linkedTask = null;
             if (item.linkedTaskId) {
-              linkedTask = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
+              linkedTask = storage.getItemById(item.linkedTaskId);
             }
             // Si pas trouvé par ID, chercher par référence Jira
             if (!linkedTask && item.reference) {
@@ -596,25 +599,22 @@
             }
 
             // Tâche liée (si différente de la référence)
-            if (item.linkedTaskId) {
-              const task = storage.getAllTasks().find(t => String(t.id) === String(item.linkedTaskId));
-              if (task && task.resume) {
-                const taskRow = document.createElement("div");
-                taskRow.className = "grid-row";
+            if (linkedTask && linkedTask.resume && linkedTask.jira !== item.reference) {
+              const taskRow = document.createElement("div");
+              taskRow.className = "grid-row";
 
-                const taskLabel = document.createElement("div");
-                taskLabel.className = "label-col";
-                taskLabel.textContent = "Tâche liée :";
-                taskLabel.onclick = handleEdit;
+              const taskLabel = document.createElement("div");
+              taskLabel.className = "label-col";
+              taskLabel.textContent = "Tâche liée :";
+              taskLabel.onclick = handleEdit;
 
-                const taskValue = document.createElement("div");
-                taskValue.className = "value-col";
-                taskValue.textContent = task.resume;
+              const taskValue = document.createElement("div");
+              taskValue.className = "value-col";
+              taskValue.textContent = linkedTask.resume;
 
-                taskRow.appendChild(taskLabel);
-                taskRow.appendChild(taskValue);
-                content.appendChild(taskRow);
-              }
+              taskRow.appendChild(taskLabel);
+              taskRow.appendChild(taskValue);
+              content.appendChild(taskRow);
             }
 
             // Description
