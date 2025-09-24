@@ -8,21 +8,64 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="unified_storage.js"></script>
   <style>
+    :root {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --bg-tertiary: #3d3d3d;
+      --text-primary: #ffffff;
+      --text-secondary: #b3b3b3;
+      --text-muted: #888888;
+      --border-color: #444444;
+      --hover-bg: #404040;
+      --success: #48bb78;
+      --warning: #ed8936;
+      --danger: #f56565;
+      --info: #4299e1;
+    }
+
     body {
       padding-top: 3.5rem;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
 
     .navbar {
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      background-color: var(--bg-secondary) !important;
+    }
+
+    .navbar-item, .navbar-link {
+      color: var(--text-primary) !important;
+    }
+
+    .navbar-item:hover, .navbar-link:hover {
+      background-color: var(--hover-bg) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .navbar-dropdown {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .navbar-dropdown .navbar-item:hover {
+      background-color: var(--hover-bg);
     }
 
     .section {
       padding: 2rem 1.5rem;
+      background-color: var(--bg-primary);
+    }
+
+    .title {
+      color: var(--text-primary) !important;
     }
 
     .group {
       margin: 1.5rem 0;
-      background: white;
+      background: var(--bg-secondary);
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
     }
 
     .group.is-collapsed > .group-content {
@@ -32,20 +75,23 @@
     .group-header {
       cursor: pointer;
       font-weight: bold;
-      padding: 1rem 0;
+      padding: 1rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      border-bottom: 2px solid #dbdbdb;
-      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 0;
+      background-color: var(--bg-tertiary);
+      border-radius: 0.5rem 0.5rem 0 0;
+      color: var(--text-primary);
     }
 
     .group-header:hover {
-      color: #3273dc;
+      background-color: var(--hover-bg);
     }
 
     .group-content {
-      padding: 0;
+      padding: 1rem;
     }
 
     .line {
@@ -56,11 +102,12 @@
       margin: 0.5rem 0;
       border-radius: 0.5rem;
       transition: background-color 0.2s;
-      background-color: #fafafa;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
     }
 
     .line:hover {
-      background-color: #f0f0f0;
+      background-color: var(--hover-bg);
     }
 
     .badge {
@@ -78,43 +125,43 @@
     }
 
     .badge.terminé {
-      background-color: #d1fae5;
-      color: #065f46;
+      background-color: #2d5a2d;
+      color: #90ee90;
     }
 
     .badge.enattente {
-      background-color: #fee2e2;
-      color: #991b1b;
+      background-color: #5a2d2d;
+      color: #ff9999;
     }
 
     .badge.envalidation {
-      background-color: #ffcc80;
-      color: #f57f17;
+      background-color: #5a4a2d;
+      color: #ffcc80;
     }
 
     .badge.enrevue {
-      background-color: #fef9c3;
-      color: #92400e;
+      background-color: #5a5a2d;
+      color: #ffff99;
     }
 
     .badge.encours {
-      background-color: #bfdbfe;
-      color: #1e40af;
+      background-color: #2d4a5a;
+      color: #87ceeb;
     }
 
     .badge.adémarrer {
-      background-color: #e5e7eb;
-      color: #374151;
+      background-color: #4a4a4a;
+      color: #d3d3d3;
     }
 
     .badge.faite {
-      background-color: #d1fae5;
-      color: #065f46;
+      background-color: #2d5a2d;
+      color: #90ee90;
     }
 
     .badge.afaire {
-      background-color: #e5e7eb;
-      color: #374151;
+      background-color: #4a4a4a;
+      color: #d3d3d3;
     }
 
     .line-link {
@@ -123,13 +170,25 @@
       overflow: hidden;
       text-overflow: ellipsis;
       flex-shrink: 0;
+      color: #87ceeb !important;
     }
 
-    .line-resume,
+    .line-link:hover {
+      color: #add8e6 !important;
+    }
+
+    .line-resume {
+      flex: 1;
+      word-wrap: break-word;
+      min-width: 0;
+      color: var(--text-primary);
+    }
+
     .line-comment {
       flex: 1;
       word-wrap: break-word;
       min-width: 0;
+      color: var(--text-muted);
     }
 
     .arrow {
@@ -141,9 +200,63 @@
     }
 
     .separator {
-      border-top: 2px solid #dbdbdb;
+      border-top: 2px solid var(--border-color);
       margin: 3rem auto;
       width: 80%;
+    }
+
+    /* Modals */
+    .modal-card {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .modal-card-head {
+      background-color: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-card-title {
+      color: var(--text-primary);
+    }
+
+    .modal-card-body {
+      background-color: var(--bg-secondary);
+    }
+
+    .modal-card-foot {
+      background-color: var(--bg-tertiary);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .label {
+      color: var(--text-primary) !important;
+    }
+
+    .input, .textarea, .select select {
+      background-color: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .input:focus, .textarea:focus, .select select:focus {
+      border-color: #4299e1 !important;
+      box-shadow: 0 0 0 0.125em rgba(66, 153, 225, 0.25) !important;
+    }
+
+    .button.is-success {
+      background-color: var(--success) !important;
+      color: white !important;
+    }
+
+    .button {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .button:hover {
+      background-color: var(--hover-bg) !important;
     }
   </style>
 </head>
@@ -480,6 +593,12 @@
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
       initModals();
+      
+      // Debug: vérifier les données
+      console.log("Storage data:", storage.data);
+      console.log("Sujets:", storage.getSujets());
+      console.log("Revues:", storage.getRevues());
+      
       renderAll();
 
       // Navbar actions
