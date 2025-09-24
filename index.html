@@ -63,9 +63,7 @@
 
     .group {
       margin: 1.5rem 0;
-      background: var(--bg-secondary);
-      border-radius: 0.5rem;
-      border: 1px solid var(--border-color);
+      background: transparent;
     }
 
     .group.is-collapsed > .group-content {
@@ -75,23 +73,22 @@
     .group-header {
       cursor: pointer;
       font-weight: bold;
-      padding: 1rem;
+      padding: 1rem 0;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       border-bottom: 2px solid var(--border-color);
-      margin-bottom: 0;
-      background-color: var(--bg-tertiary);
-      border-radius: 0.5rem 0.5rem 0 0;
+      margin-bottom: 1rem;
+      background-color: transparent;
       color: var(--text-primary);
     }
 
     .group-header:hover {
-      background-color: var(--hover-bg);
+      color: var(--info);
     }
 
     .group-content {
-      padding: 1rem;
+      padding: 0;
     }
 
     .line {
@@ -102,8 +99,8 @@
       margin: 0.5rem 0;
       border-radius: 0.5rem;
       transition: background-color 0.2s;
-      background-color: var(--bg-primary);
-      border: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      border: none;
     }
 
     .line:hover {
