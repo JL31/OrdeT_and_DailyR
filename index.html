@@ -388,17 +388,8 @@
 
     // Rendu des sections
     function renderAll() {
-      renderSection("sujets-container", groupByStatus(storage.data.sujets), "sujet");
-      renderSection("revues-container", groupByStatus(storage.data.revues), "revue");
-    }
-
-    function groupByStatus(items) {
-      const map = {};
-      for (const item of items.sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))) {
-        if (!map[item.statut]) map[item.statut] = [];
-        map[item.statut].push(item);
-      }
-      return map;
+      renderSection("sujets-container", storage.getSujets(), "sujet");
+      renderSection("revues-container", storage.getRevues(), "revue");
     }
 
     function renderSection(containerId, grouped, type) {
@@ -408,7 +399,7 @@
       const order = type === "sujet" ? sujetOrder : revueOrder;
 
       for (const status of order) {
-        if (!grouped[status]) continue;
+        if (!grouped[status] || grouped[status].length === 0) continue;
         const items = grouped[status];
 
         const group = document.createElement("div");
@@ -436,7 +427,7 @@
         const content = document.createElement("div");
         content.className = "group-content";
 
-        for (const item of items) {
+        for (const item of items.sort((a, b) => new Date(a.date_ajout) - new Date(b.date_ajout))) {
           const line = document.createElement("div");
           line.className = "line";
 
@@ -489,6 +480,12 @@
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
       initModals();
+      
+      // Debug: vérifier les données
+      console.log("Storage data:", storage.data);
+      console.log("Sujets:", storage.getSujets());
+      console.log("Revues:", storage.getRevues());
+      
       renderAll();
 
       // Navbar actions
