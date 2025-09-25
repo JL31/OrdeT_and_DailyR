@@ -904,4 +904,173 @@
       items.forEach(item => {
         const taskItem = document.createElement('div');
         taskItem.className = 'task-item';
-        taskItem.onclick =
+        taskItem.onclick = () => selectTask(item, taskItem);
+
+        const preview = document.createElement('div');
+        preview.className = 'task-preview';
+
+        // Badge pour statut si existant
+        if (item.statut) {
+          const badge = document.createElement('span');
+          let badgeClass = item.statut.replace(/\s+/g, '').toLowerCase();
+          badge.className = `badge ${badgeClass}`;
+          badge.textContent = item.statut;
+          preview.appendChild(badge);
+        }
+
+        const ref = item.jira || item.reference || 'Sans référence';
+        const desc = item.resume || item.description || '-';
+        const commentaire = item.commentaire || 'Pas de commentaire';
+        const source = item.source || 'daily';
+
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <div><strong>${ref}</strong> - ${desc}</div>
+          <div class="has-text-grey is-size-7">${commentaire}</div>
+          <div class="has-text-grey is-size-7"><em>Source: ${source}</em></div>
+        `;
+        preview.appendChild(info);
+        taskItem.appendChild(preview);
+
+        container.appendChild(taskItem);
+      });
+    }
+
+    function selectTask(task, element) {
+      // Désélectionner l'ancien élément
+      document.querySelectorAll('.task-item.selected').forEach(el => {
+        el.classList.remove('selected');
+      });
+
+      // Sélectionner le nouveau
+      element.classList.add('selected');
+      selectedTask = task;
+      document.getElementById('add-selected-task').disabled = false;
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      initModals();
+      renderAll();
+
+      // Headers des groupes (collapse/expand)
+      document.querySelectorAll(".group-header").forEach(header => {
+        header.onclick = () => {
+          const group = header.parentElement;
+          group.classList.toggle("is-collapsed");
+        };
+      });
+
+      // Actions de la navbar
+      document.getElementById('navbar-add-entry').onclick = () => {
+        editingItem = null;
+        editingSection = null;
+        document.getElementById("form-entry").reset();
+        showModal("modal-entry");
+      };
+
+      document.getElementById('navbar-add-from-task').onclick = () => {
+        selectedTask = null;
+        document.getElementById('task-search').value = '';
+        document.getElementById('add-selected-task').disabled = true;
+        renderTaskSelector();
+        showModal("modal-task-selector");
+      };
+
+      document.getElementById('navbar-jira-url').onclick = () => {
+        document.getElementById("jira-url-id").value = storage.getUrl();
+        showModal("modal-set-jira-url");
+      };
+
+      document.getElementById('navbar-export').onclick = () => {
+        storage.exportData();
+      };
+
+      document.getElementById('navbar-import-file').onchange = (e) => {
+        if (e.target.files[0]) {
+          storage.importData(e.target.files[0]);
+        }
+      };
+
+      // Recherche dans les tâches
+      document.getElementById('task-search').oninput = (e) => {
+        renderTaskSelector(e.target.value);
+        selectedTask = null;
+        document.getElementById('add-selected-task').disabled = true;
+      };
+
+      // Ajouter une tâche sélectionnée
+      document.getElementById('add-selected-task').onclick = () => {
+        if (!selectedTask) return;
+        
+        const section = document.getElementById('target-section').value;
+        const entry = {
+          reference: selectedTask.jira,
+          description: selectedTask.resume,
+          commentaire: selectedTask.commentaire || '',
+          linkedTaskId: selectedTask.id,
+          urgent: false
+        };
+
+        storage.addDailyEntry(section, entry);
+        renderAll();
+        hideModal("modal-task-selector");
+      };
+
+      // Définir l'URL du projet Jira
+      const btn = document.getElementById('set-jira-url');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = document.getElementById("jira-url-id").value;
+        storage.setUrl(url);
+        hideModal("modal-set-jira-url");
+      });
+
+      // Formulaire principal
+      document.getElementById("form-entry").onsubmit = (e) => {
+        e.preventDefault();
+        const form = new FormData(e.target);
+        const newSection = form.get("section");
+        const entry = {
+          reference: form.get("reference") || "",
+          description: form.get("description") || "",
+          commentaire: form.get("commentaire") || "",
+          urgent: form.get("urgent") === "on"
+        };
+
+        if (editingItem && editingSection) {
+          storage.updateDailyEntry(editingSection, editingItem.id, newSection, entry);
+        } else {
+          storage.addDailyEntry(newSection, entry);
+        }
+
+        editingItem = null;
+        editingSection = null;
+        renderAll();
+        hideModal("modal-entry");
+      };
+
+      // Confirmation de suppression
+      document.getElementById("confirm-delete-btn").onclick = () => {
+        if (!contextEntryMeta) return;
+        const { section, id } = contextEntryMeta;
+        storage.deleteDailyEntry(section, id);
+        renderAll();
+        hideModal("modal-confirm-delete");
+        contextEntryMeta = null;
+      };
+
+      // Burger menu pour mobile
+      const burger = document.querySelector('.navbar-burger');
+      const menu = document.querySelector('.navbar-menu');
+      
+      if (burger) {
+        burger.addEventListener('click', () => {
+          burger.classList.toggle('is-active');
+          menu.classList.toggle('is-active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
