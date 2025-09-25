@@ -1,0 +1,245 @@
+:root {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3d3d3d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #888888;
+  --border-color: #444444;
+  --hover-bg: #404040;
+  --success: #48bb78;
+  --warning: #ed8936;
+  --danger: #f56565;
+  --info: #4299e1;
+}
+
+body {
+  padding-top: 3.5rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background-color: var(--bg-secondary) !important;
+}
+
+.navbar-item, .navbar-link {
+  color: var(--text-primary) !important;
+}
+
+.navbar-item:hover, .navbar-link:hover {
+  background-color: var(--hover-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+.navbar-dropdown {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.section {
+  padding: 2rem 1.5rem;
+  background-color: var(--bg-primary);
+}
+
+.title {
+  color: var(--text-primary) !important;
+}
+
+.group {
+  margin: 1.5rem 0;
+  background: transparent;
+}
+
+.group.is-collapsed > .group-content {
+  display: none;
+}
+
+.group-header {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1rem;
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.group-header:hover {
+  color: var(--info);
+}
+
+.group-content {
+  padding: 0;
+}
+
+.line {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-color);
+}
+
+.line:hover {
+  background-color: var(--hover-bg);
+}
+
+.badge {
+  font-weight: bold;
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.badge.terminé {
+  background-color: #2d5a2d;
+  color: #90ee90;
+}
+
+.badge.enattente {
+  background-color: #5a2d2d;
+  color: #ff9999;
+}
+
+.badge.envalidation {
+  background-color: #5a4a2d;
+  color: #ffcc80;
+}
+
+.badge.enrevue {
+  background-color: #5a5a2d;
+  color: #ffff99;
+}
+
+.badge.encours {
+  background-color: #2d4a5a;
+  color: #87ceeb;
+}
+
+.badge.adémarrer {
+  background-color: #4a4a4a;
+  color: #d3d3d3;
+}
+
+.badge.faite {
+  background-color: #2d5a2d;
+  color: #90ee90;
+}
+
+.badge.afaire {
+  background-color: #4a4a4a;
+  color: #d3d3d3;
+}
+
+.line-link {
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  color: #87ceeb !important;
+}
+
+.line-link:hover {
+  color: #add8e6 !important;
+}
+
+.line-resume {
+  flex: 1;
+  word-wrap: break-word;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.line-comment {
+  flex: 1;
+  word-wrap: break-word;
+  min-width: 0;
+  color: var(--text-muted);
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.group.is-collapsed .arrow {
+  transform: rotate(-90deg);
+}
+
+.separator {
+  border-top: 2px solid var(--border-color);
+  margin: 3rem auto;
+  width: 80%;
+}
+
+/* Modals */
+.modal-card {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-card-head {
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-card-title {
+  color: var(--text-primary);
+}
+
+.modal-card-body {
+  background-color: var(--bg-secondary);
+}
+
+.modal-card-foot {
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+}
+
+.label {
+  color: var(--text-primary) !important;
+}
+
+.input, .textarea, .select select {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.input:focus, .textarea:focus, .select select:focus {
+  border-color: #4299e1 !important;
+  box-shadow: 0 0 0 0.125em rgba(66, 153, 225, 0.25) !important;
+}
+
+.button.is-success {
+  background-color: var(--success) !important;
+  color: white !important;
+}
+
+.button {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.button:hover {
+  background-color: var(--hover-bg) !important;
+}

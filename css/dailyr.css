@@ -1,0 +1,452 @@
+/* Force dark theme immediately */
+html {
+  background-color: #1a1a1a !important;
+}
+
+body {
+  padding-top: 3.5rem;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Override all Bulma backgrounds */
+.hero,
+.section,
+.container,
+.content {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Navbar dark theme */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+  background-color: #2d2d2d !important;
+}
+
+.navbar-brand .navbar-item,
+.navbar-start .navbar-item,
+.navbar-end .navbar-item,
+.navbar-item,
+.navbar-link {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.navbar-item:focus,
+.navbar-item:focus-within,
+.navbar-item:hover,
+.navbar-item.is-active,
+.navbar-link:focus,
+.navbar-link:focus-within,
+.navbar-link:hover,
+.navbar-link.is-active {
+  background-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+.navbar-dropdown {
+  background-color: #2d2d2d !important;
+  border: 1px solid #444444 !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+
+.navbar-dropdown .navbar-item {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+.navbar-divider {
+  background-color: #444444 !important;
+}
+
+/* Groups styling */
+.group {
+  margin: 1.5rem 0;
+  background: transparent !important;
+}
+
+.group.is-collapsed > .group-content {
+  display: none;
+}
+
+.group-header {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid #444444;
+  margin-bottom: 1rem;
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.group-header:hover {
+  color: #4299e1 !important;
+}
+
+.group-content {
+  padding: 0;
+}
+
+/* Lines/Items */
+.line {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 0.5rem;
+  background-color: #1a1a1a !important;
+  transition: background-color 0.2s;
+  position: relative;
+  border: 1px solid #444444;
+}
+
+.line:hover {
+  background-color: #404040 !important;
+}
+
+.line.urgent {
+  border: 2px solid #ff3860;
+}
+
+.urgent-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 2rem;
+  color: rgba(255, 56, 96, 0.15);
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.line-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.label-col {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  color: #b3b3b3 !important;
+  font-size: 0.9rem;
+}
+
+.label-col:hover {
+  color: #4299e1 !important;
+}
+
+.value-col {
+  color: #ffffff !important;
+  word-wrap: break-word;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.value-col.has-text-grey {
+  color: #888888 !important;
+}
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(245, 101, 101, 0.2) !important;
+  border: none !important;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  transition: background-color 0.2s ease;
+  color: #f56565 !important;
+  margin-left: 1rem;
+}
+
+.delete-btn:hover {
+  background-color: rgba(245, 101, 101, 0.3) !important;
+}
+
+/* Badges with dark theme */
+.badge {
+  font-weight: bold;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  margin-right: 0.5rem;
+}
+
+.badge.terminé {
+  background-color: #2d5a2d !important;
+  color: #90ee90 !important;
+}
+
+.badge.enattente {
+  background-color: #5a2d2d !important;
+  color: #ff9999 !important;
+}
+
+.badge.envalidation {
+  background-color: #5a4a2d !important;
+  color: #ffcc80 !important;
+}
+
+.badge.enrevue {
+  background-color: #5a5a2d !important;
+  color: #ffff99 !important;
+}
+
+.badge.encours {
+  background-color: #2d4a5a !important;
+  color: #87ceeb !important;
+}
+
+.badge.adémarrer {
+  background-color: #4a4a4a !important;
+  color: #d3d3d3 !important;
+}
+
+.badge.faite {
+  background-color: #2d5a2d !important;
+  color: #90ee90 !important;
+}
+
+.badge.afaire {
+  background-color: #4a4a4a !important;
+  color: #d3d3d3 !important;
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.group.is-collapsed .arrow {
+  transform: rotate(-90deg);
+}
+
+.jira-link {
+  color: #87ceeb !important;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.jira-link:hover {
+  text-decoration: underline;
+  color: #add8e6 !important;
+}
+
+/* Task selector */
+.task-selector {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #444444;
+  border-radius: 0.375rem;
+  background: #1a1a1a !important;
+}
+
+.task-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #444444;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.task-item:hover {
+  background-color: #404040 !important;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item.selected {
+  background-color: rgba(66, 153, 225, 0.2) !important;
+  border-left: 3px solid #4299e1;
+}
+
+.task-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Modal dark theme */
+.modal-card {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+.modal-card-head {
+  background-color: #3d3d3d !important;
+  border-bottom: 1px solid #444444 !important;
+}
+
+.modal-card-title {
+  color: #ffffff !important;
+}
+
+.modal-card-body {
+  background-color: #2d2d2d !important;
+}
+
+.modal-card-foot {
+  background-color: #3d3d3d !important;
+  border-top: 1px solid #444444 !important;
+}
+
+/* Form elements dark theme */
+.label {
+  color: #ffffff !important;
+}
+
+.help {
+  color: #888888 !important;
+}
+
+.input,
+.textarea,
+.select select {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border-color: #444444 !important;
+}
+
+.input:focus,
+.textarea:focus,
+.select select:focus {
+  border-color: #4299e1 !important;
+  box-shadow: 0 0 0 0.125em rgba(66, 153, 225, 0.25) !important;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #888888 !important;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: #ffffff !important;
+}
+
+/* Button dark theme */
+.button {
+  background-color: #3d3d3d !important;
+  color: #ffffff !important;
+  border-color: #444444 !important;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #404040 !important;
+  color: #ffffff !important;
+  border-color: #444444 !important;
+}
+
+.button.is-success {
+  background-color: #48bb78 !important;
+  color: white !important;
+  border-color: #48bb78 !important;
+}
+
+.button.is-success:hover,
+.button.is-success:focus {
+  background-color: #38a169 !important;
+  border-color: #38a169 !important;
+}
+
+.button.is-danger {
+  background-color: #f56565 !important;
+  color: white !important;
+  border-color: #f56565 !important;
+}
+
+.button.is-danger:hover,
+.button.is-danger:focus {
+  background-color: #e53e3e !important;
+  border-color: #e53e3e !important;
+}
+
+.button:disabled {
+  background-color: #3d3d3d !important;
+  color: #888888 !important;
+  opacity: 0.6;
+  border-color: #444444 !important;
+}
+
+/* Checkbox */
+.checkbox {
+  color: #ffffff !important;
+}
+
+/* Delete button (Bulma) */
+.delete {
+  background-color: rgba(245, 101, 101, 0.2) !important;
+}
+
+.delete:hover,
+.delete:focus {
+  background-color: rgba(245, 101, 101, 0.3) !important;
+}
+
+.delete::before,
+.delete::after {
+  background-color: #ffffff !important;
+}
+
+/* Icon colors */
+.has-text-success {
+  color: #48bb78 !important;
+}
+
+.has-text-warning {
+  color: #ed8936 !important;
+}
+
+.has-text-info {
+  color: #4299e1 !important;
+}
+
+.has-text-grey {
+  color: #888888 !important;
+}
+
+.is-size-7 {
+  color: #888888 !important;
+}
+
+/* Control elements */
+.control .icon {
+  color: #b3b3b3 !important;
+}
+
+/* File input */
+input[type="file"] {
+  color: #ffffff !important;
+}
