@@ -167,7 +167,7 @@ class UnifiedStorage {
     return this.data.url.replace(/\/+$/, '');
   }
 
-  // --- Nouvelle méthode générique ---
+  // --- Méthode générique ---
   addItem(type, sectionOrStatut, data) {
     const id = this.generateId().toString();
     const item = {
@@ -217,6 +217,109 @@ class UnifiedStorage {
     this.save();
   }
 
+  // --- Wrappers de compatibilité ---
+  addSujet(sujet) {
+    return this.addItem("sujet", sujet.statut, sujet);
+  }
+
+  updateSujet(id, updates) {
+    const item = this.data.items[id];
+    if (!item || item.type !== 'sujet') return null;
+    const oldStatut = item.statut;
+    const newStatut = updates.statut;
+
+    Object.assign(item, updates);
+    if (oldStatut !== newStatut) {
+      if (this.data.categories.sujets[oldStatut]) {
+        this.data.categories.sujets[oldStatut] = this.data.categories.sujets[oldStatut].filter(x => x !== id);
+      }
+      const target = this.data.categories.sujets[newStatut] ? newStatut : "Inconnue";
+      this.data.categories.sujets[target].push(id);
+    }
+    this.save();
+    return item;
+  }
+
+  deleteSujet(id) {
+    this.deleteItem(id);
+  }
+
+  getSujets() {
+    const result = {};
+    Object.keys(this.data.categories.sujets).forEach(statut => {
+      result[statut] = this.data.categories.sujets[statut].map(id => this.data.items[id]).filter(Boolean);
+    });
+    return result;
+  }
+
+  addRevue(revue) {
+    return this.addItem("revue", revue.statut, revue);
+  }
+
+  updateRevue(id, updates) {
+    const item = this.data.items[id];
+    if (!item || item.type !== 'revue') return null;
+    const oldStatut = item.statut;
+    const newStatut = updates.statut;
+
+    Object.assign(item, updates);
+    if (oldStatut !== newStatut) {
+      if (this.data.categories.revues[oldStatut]) {
+        this.data.categories.revues[oldStatut] = this.data.categories.revues[oldStatut].filter(x => x !== id);
+      }
+      const target = this.data.categories.revues[newStatut] ? newStatut : "Inconnue";
+      this.data.categories.revues[target].push(id);
+    }
+    this.save();
+    return item;
+  }
+
+  deleteRevue(id) {
+    this.deleteItem(id);
+  }
+
+  getRevues() {
+    const result = {};
+    Object.keys(this.data.categories.revues).forEach(statut => {
+      result[statut] = this.data.categories.revues[statut].map(id => this.data.items[id]).filter(Boolean);
+    });
+    return result;
+  }
+
+  addDailyEntry(section, entry) {
+    return this.addItem("daily", section, entry);
+  }
+
+  updateDailyEntry(oldSection, id, newSection, updates) {
+    const item = this.data.items[id];
+    if (!item || item.type !== 'daily') return null;
+
+    Object.assign(item, updates);
+    item.section = newSection;
+
+    if (oldSection !== newSection) {
+      if (this.data.categories.dailyEntries[oldSection]) {
+        this.data.categories.dailyEntries[oldSection] = this.data.categories.dailyEntries[oldSection].filter(x => x !== id);
+      }
+      const target = this.data.categories.dailyEntries[newSection] ? newSection : "Inconnue";
+      this.data.categories.dailyEntries[target].push(id);
+    }
+    this.save();
+    return item;
+  }
+
+  deleteDailyEntry(section, id) {
+    this.deleteItem(id);
+  }
+
+  getDailyEntries() {
+    const result = {};
+    Object.keys(this.data.categories.dailyEntries).forEach(section => {
+      result[section] = this.data.categories.dailyEntries[section].map(id => this.data.items[id]).filter(Boolean);
+    });
+    return result;
+  }
+
   // --- Recherche robuste ---
   searchAll(query) {
     const results = [];
@@ -246,12 +349,10 @@ class UnifiedStorage {
       try {
         const imported = JSON.parse(e.target.result);
 
-        // Fusion des items
         Object.values(imported.items || {}).forEach(item => {
           this.data.items[item.id] = item;
         });
 
-        // Fusion des catégories
         ["sujets", "revues"].forEach(type => {
           if (imported.categories?.[type]) {
             Object.keys(imported.categories[type]).forEach(statut => {
@@ -315,109 +416,9 @@ class UnifiedStorage {
     a.download = `unified_backup_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
   }
-
-    // --- Wrappers de compatibilité ---
-
-  addSujet(sujet) {
-    return this.addItem("sujet", sujet.statut, sujet);
-  }
-
-  updateSujet(id, updates) {
-    const item = this.data.items[id];
-    if (!item || item.type !== 'sujet') return null;
-    const oldStatut = item.statut;
-    const newStatut = updates.statut;
-
-    Object.assign(item, updates);
-    if (oldStatut !== newStatut) {
-      const oldList = this.data.categories.sujets[oldStatut] || [];
-      this.data.categories.sujets[oldStatut] = oldList.filter(x => x !== id);
-      const target = this.data.categories.sujets[newStatut] ? newStatut : "Inconnue";
-      this.data.categories.sujets[target].push(id);
-    }
-    this.save();
-    return item;
-  }
-
-  deleteSujet(id) {
-    this.deleteItem(id);
-  }
-
-  getSujets() {
-    const result = {};
-    Object.keys(this.data.categories.sujets).forEach(statut => {
-      result[statut] = this.data.categories.sujets[statut].map(id => this.data.items[id]).filter(Boolean);
-    });
-    return result;
-  }
-
-  addRevue(revue) {
-    return this.addItem("revue", revue.statut, revue);
-  }
-
-  updateRevue(id, updates) {
-    const item = this.data.items[id];
-    if (!item || item.type !== 'revue') return null;
-    const oldStatut = item.statut;
-    const newStatut = updates.statut;
-
-    Object.assign(item, updates);
-    if (oldStatut !== newStatut) {
-      const oldList = this.data.categories.revues[oldStatut] || [];
-      this.data.categories.revues[oldStatut] = oldList.filter(x => x !== id);
-      const target = this.data.categories.revues[newStatut] ? newStatut : "Inconnue";
-      this.data.categories.revues[target].push(id);
-    }
-    this.save();
-    return item;
-  }
-
-  deleteRevue(id) {
-    this.deleteItem(id);
-  }
-
-  getRevues() {
-    const result = {};
-    Object.keys(this.data.categories.revues).forEach(statut => {
-      result[statut] = this.data.categories.revues[statut].map(id => this.data.items[id]).filter(Boolean);
-    });
-    return result;
-  }
-
-  addDailyEntry(section, entry) {
-    return this.addItem("daily", section, entry);
-  }
-
-  updateDailyEntry(oldSection, id, newSection, updates) {
-    const item = this.data.items[id];
-    if (!item || item.type !== 'daily') return null;
-
-    Object.assign(item, updates);
-    item.section = newSection;
-
-    if (oldSection !== newSection) {
-      this.data.categories.dailyEntries[oldSection] = (this.data.categories.dailyEntries[oldSection] || []).filter(x => x !== id);
-      const target = this.data.categories.dailyEntries[newSection] ? newSection : "Inconnue";
-      this.data.categories.dailyEntries[target].push(id);
-    }
-    this.save();
-    return item;
-  }
-
-  deleteDailyEntry(section, id) {
-    this.deleteItem(id);
-  }
-
-  getDailyEntries() {
-    const result = {};
-    Object.keys(this.data.categories.dailyEntries).forEach(section => {
-      result[section] = this.data.categories.dailyEntries[section].map(id => this.data.items[id]).filter(Boolean);
-    });
-    return result;
-  }
 }
 
 // Instance globale
 window.unifiedStorage = new UnifiedStorage();
 
-console.log("Unified Storage Manager (Refactored + Improvements) loaded");
+console.log("Unified Storage Manager (Refactored + Safe Updates) loaded");
